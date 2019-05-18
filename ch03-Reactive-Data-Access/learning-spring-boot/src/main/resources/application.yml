@@ -1,0 +1,12 @@
+logging:
+  level:
+    com:
+      greglturnquist: DEBUG
+    org:
+      springframework:
+        data: TRACE
+    io:
+      netty: DEBUG
+    reactor:
+      core: TRACE
+      util: TRACE
