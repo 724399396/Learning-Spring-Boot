@@ -1,0 +1,21 @@
+logging:
+  level:
+    com:
+      greglturnquist: DEBUG
+    org:
+      springframework:
+        data: TRACE
+    io:
+      netty: DEBUG
+    reactor:
+      core: TRACE
+      util: TRACE
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
