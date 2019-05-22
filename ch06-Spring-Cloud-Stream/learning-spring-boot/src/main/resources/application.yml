@@ -1,0 +1,34 @@
+logging:
+  level:
+    com:
+      greglturnquist: DEBUG
+    org:
+      springframework:
+        cloud: DEBUG
+        integration: DEBUG
+        data: TRACE
+    io:
+      netty: DEBUG
+    reactor:
+      core: TRACE
+      util: TRACE
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: learning-spring-boot-comments
+          group: learning-spring-boot
+        output:
+          destination: learning-spring-boot-comments
+          group: learning-spring-boot
