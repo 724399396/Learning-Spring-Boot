@@ -27,3 +27,9 @@ management:
     web:
       exposure:
         include: "*"
+
+logging:
+  level:
+    reactor:
+      core: TRACE
+      util: TRACE

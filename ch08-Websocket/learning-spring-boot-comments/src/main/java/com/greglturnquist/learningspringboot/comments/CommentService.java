@@ -7,6 +7,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Service;
@@ -14,15 +15,15 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-@EnableBinding(CustomProcessor.class)
+@EnableBinding(Processor.class)
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentRepository repository;
     private final MeterRegistry meterRegistry;
 
     @StreamListener
-    @Output(CustomProcessor.OUTPUT)
-    public Flux<Comment> save(@Input(CustomProcessor.INPUT) Flux<Comment> newComments) {
+    @Output(Processor.OUTPUT)
+    public Flux<Comment> save(@Input(Processor.INPUT) Flux<Comment> newComments) {
         return repository
                 .saveAll(newComments)
                 .map(comment -> {
