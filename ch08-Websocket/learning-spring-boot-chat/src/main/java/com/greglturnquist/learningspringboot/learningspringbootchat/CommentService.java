@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -14,7 +13,7 @@ import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 
 @Service
-@EnableBinding(Sink.class)
+@EnableBinding(ChatServiceStreams.class)
 @Slf4j
 public class CommentService implements WebSocketHandler {
 
@@ -31,7 +30,7 @@ public class CommentService implements WebSocketHandler {
                 .autoConnect();
     }
 
-    @StreamListener(Sink.INPUT)
+    @StreamListener(ChatServiceStreams.NEW_COMMENTS)
     public void broadcast(Comment comment) {
         if (webSocketCommentSink != null) {
             log.info("Publishing " + comment.toString() + " to websocket...");

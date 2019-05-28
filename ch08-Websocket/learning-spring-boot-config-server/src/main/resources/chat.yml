@@ -5,10 +5,6 @@ spring:
   cloud:
     stream:
       bidings:
-        input:
-          destination: learning-spring-boot-chat
-          group: comments-chat
-          content-type: application/json
         newComments:
           destination: learning-spring-boot-chat
           group: comments-chat
