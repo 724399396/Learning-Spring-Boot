@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 @Service
 @EnableBinding(ChatServiceStreams.class)
 @Slf4j
-public class OutboundChatService extends UserParsingHandshakeHandler {
+public class OutboundChatService extends AuthorizedWebSocketHandler {
     private Flux<Message<String>> flux;
     private FluxSink<Message<String>> chatMessageSink;
 
@@ -34,14 +34,14 @@ public class OutboundChatService extends UserParsingHandshakeHandler {
     }
 
     @Override
-    protected Mono<Void> handleInternal(WebSocketSession session) {
+    protected Mono<Void> doHandle(WebSocketSession session, String user) {
         return session
                 .send(this.flux
-                        .filter(s -> validate(s, getUser(session.getId())))
+                        .filter(s -> validate(s, user))
                         .map(this::transform)
                         .map(session::textMessage)
-                        .log(getUser(session.getId()) + "-outbound-wrap-as-websocket-message")
-                        .log(getUser(session.getId()) + "-outbound-publish-to-websocket"));
+                        .log(user + "-outbound-wrap-as-websocket-message")
+                        .log(user + "-outbound-publish-to-websocket"));
     }
 
     private boolean validate(Message<String> message, String user) {

@@ -11,19 +11,19 @@ import reactor.core.publisher.Mono;
 @Service
 @EnableBinding(ChatServiceStreams.class)
 @RequiredArgsConstructor
-public class InboundChatService extends UserParsingHandshakeHandler {
+public class InboundChatService extends AuthorizedWebSocketHandler {
     private final ChatServiceStreams chatServiceStreams;
 
 
     @Override
-    protected Mono<Void> handleInternal(WebSocketSession session) {
+    protected Mono<Void> doHandle(WebSocketSession session, String name) {
         return session
                 .receive()
-                .log(getUser(session.getId()) + "-inbound-incoming-chat-message")
+                .log(name + "-inbound-incoming-chat-message")
                 .map(WebSocketMessage::getPayloadAsText)
-                .log(getUser(session.getId()) + "inbound-convert-to-text")
-                .flatMap(message -> broadcast(message, getUser(session.getId())))
-                .log(getUser(session.getId()) + "-inbound-broadcast-to-broker")
+                .log(name + "inbound-convert-to-text")
+                .flatMap(message -> broadcast(message, name))
+                .log(name + "-inbound-broadcast-to-broker")
                 .then();
     }
 

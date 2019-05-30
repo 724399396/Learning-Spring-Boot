@@ -1,6 +1,12 @@
 server:
   port: 8200
 
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://user:password@localhost:8761/eureka/
+
 spring:
   cloud:
     stream:
@@ -15,3 +21,30 @@ spring:
         brokerToClient:
           destination: learning-spring-boot-chat-user-messages
           group: topic-chatMessages
+    gateway:
+      routes:
+      - id: imageService
+        uri: lb://IMAGES
+        predicates:
+        - Path=/imageService/**
+        filters:
+        - RewritePath=/imageService/(?<segment>.*), /$\{segment}
+        - RewritePath=/imageService, /
+        - SaveSession
+      - id: images uri: lb://IMAGES
+        predicates:
+        - Path=/images/**
+        filters:
+        - SaveSession
+      - id: mainCss
+        uri: lb://IMAGES
+        predicates:
+        - Path=/main.css
+        filters:
+        - SaveSession
+      - id: commentsService
+        uri: lb://IMAGES
+        predicates:
+        - Path=/comments/**
+        filters:
+        - SaveSession

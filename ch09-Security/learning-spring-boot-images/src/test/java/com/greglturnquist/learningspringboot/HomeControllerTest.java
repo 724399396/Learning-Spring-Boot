@@ -37,8 +37,8 @@ public class HomeControllerTest {
     @Test
     public void baseRouteShouldListAllImages() {
         // given
-        Image alphaImage = new Image("1", "alpha.png");
-        Image bravoImage = new Image("2", "bravo.png");
+        Image alphaImage = new Image("1", "alpha.png", "admin");
+        Image bravoImage = new Image("2", "bravo.png", "admin");
         given(imageService.findAllImages())
                 .willReturn(Flux.just(alphaImage, bravoImage));
 
@@ -94,7 +94,7 @@ public class HomeControllerTest {
 
     @Test
     public void deleteImageShouldWork() {
-        Image alphaImage = new Image("1", "alpha.png");
+        Image alphaImage = new Image("1", "alpha.png", "admin");
         given(imageService.deleteImage(any())).willReturn(Mono.empty());
 
         webClient

@@ -7,6 +7,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.HashMap;
 
 @Controller
@@ -44,9 +46,10 @@ public class HomeController {
     }
 
     @PostMapping(value = BASE_PATH)
-    public Mono<String> createFile(@RequestPart(name = "file")
-                                           Flux<FilePart> files) {
-        return imageService.createImage(files)
+    public Mono<String> createFile(
+            @RequestPart(name = "file") Flux<FilePart> files,
+            @AuthenticationPrincipal Principal principal) {
+        return imageService.createImage(files, principal)
                 .then(Mono.just("redirect:/"));
     }
 
@@ -67,6 +70,7 @@ public class HomeController {
                                 .map(imageAndComments -> new HashMap<String, Object>() {{
                                     put("id", imageAndComments.getT1().getId());
                                     put("name", imageAndComments.getT1().getName());
+                                    put("owner", image.getOwner());
                                     put("comments", imageAndComments.getT2());
                                 }})
                 ));

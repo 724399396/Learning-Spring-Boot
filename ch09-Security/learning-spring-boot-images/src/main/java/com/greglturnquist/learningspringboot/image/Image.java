@@ -10,4 +10,5 @@ public class Image {
     @Id
     private final String id;
     private final String name;
+    private final String owner;
 }

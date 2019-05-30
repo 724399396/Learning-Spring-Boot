@@ -7,7 +7,7 @@
  * in the user manual at https://docs.gradle.org/5.2.1/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'ch08-Websocket'
+rootProject.name = 'ch09-Security'
 
 include 'learning-spring-boot-comments'
 include 'learning-spring-boot-config-server'

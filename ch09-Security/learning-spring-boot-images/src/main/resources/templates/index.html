@@ -1,23 +1,10 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8"/>
-    <title>Learning Spring Boot: Spring-a-Gram</title>
-    <link rel="stylesheet" href="/main.css"/>
-</head>
-<body>
-<h1>Learning Spring Boot - 2nd Edition</h1>
-<h3>Using the LiveReload plugin in your browser will speed up efforts.</h3>
-<h4 th:text="${extra}"></h4>
-<input id="username" type="text"/>
-<button id="connect">Connect</button>
-<button id="disconnect" style="display: none">Disconnect</button>
-<div>
+<div xmlns:th="http://www.thymeleaf.org">
     <table>
         <thead>
         <tr>
             <th>Id</th>
             <th>Name</th>
+            <th>Owner</th>
             <th>Image</th>
             <th></th>
         </tr>
@@ -26,6 +13,7 @@
         <tr th:each="image : ${images}">
             <td th:text="${image.id}"/>
             <td th:text="${image.name}"/>
+            <td th:text="${image.owner}"/>
             <td>
                 <a th:href="@{'/images/' + ${image.name} + '/raw'}">
                     <img th:src="@{'/images/'+${image.name}+'/raw'}"
@@ -70,89 +58,3 @@
     </div>
 </div>
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    (function () {
-        var newComments = new WebSocket(
-            'ws://localhost:8200/topic/comments.new');
-        newComments.onopen = function (event) {
-            console.log('Connected to chat service!');
-            console.log(event);
-        }
-        newComments.onmessage = function (event) {
-            console.log('Received ' + event.data + '!');
-            var parsedMessage = JSON.parse(event.data);
-            var ul = document.getElementById('comments-' + parsedMessage.imageId);
-            var li = document.createElement('li');
-            li.appendChild(
-                document.createTextNode(parsedMessage.comment));
-            ul.appendChild(li);
-        }
-
-        document.querySelectorAll('button.comment')
-            .forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var comment = document.getElementById('comment-' + button.id);
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', /*[[@{'/comments'}]]*/'', true);
-
-                    var formData = new FormData();
-                    formData.append('comment', comment.value);
-                    formData.append('imageId', button.id);
-                    xhr.send(formData);
-                    comment.value = '';
-                })
-            });
-
-
-        document.getElementById('connect')
-            .addEventListener('click', function () {
-                    document.getElementById('connect').style.display = 'none';
-                    document.getElementById('disconnect').style.display = 'inline';
-                    var usernameInput = document.getElementById('username');
-                    document.getElementById('chatBox').style.display = 'inline';
-
-                    var inboundChatMessages = new WebSocket('ws://localhost:8200/topic/chatMessage.new?user=' + usernameInput.value);
-                    inboundChatMessages.onmessage = function (event) {
-                        console.log('Received ' + event.data);
-                        var chatDisplay = document.getElementById('chatDisplay');
-                        chatDisplay.value = chatDisplay.value + event.data + '\n';
-                    }
-
-                var outboundChatMessage = new WebSocket('ws://localhost:8200/app/chatMessage.new?user=' + usernameInput.value);
-                    // Post new chat message
-                    outboundChatMessage.onopen = function (event) {
-                        document.getElementById('chatButton')
-                            .addEventListener('click', function () {
-                                var chatInput = document.getElementById('chatInput');
-                                console.log('Publishing "' + chatInput.value + '"');
-                                outboundChatMessage.send(chatInput.value);
-                                chatInput.value = '';
-                                chatInput.focus();
-                            })
-                    }
-
-                    document.getElementById('disconnect')
-                        .addEventListener('click', function () {
-                            document.getElementById('connect').style.display = 'inline';
-                            document.getElementById('disconnet').style.display = 'none';
-                            document.getElementById('chatBox').style.display = 'none';
-
-                            if (nweComments != null) {
-                                newComments.close();
-                            }
-                            if (outboundChatMessage != null) {
-                                outboundChatMessage.close();
-                            }
-                            if (inboundChatMessages != null) {
-                                inboundChatMessages.close();
-                            }
-                        })
-                }
-            );
-
-    })();
-    /*]]>*/
-</script>
-</body>
-</html>

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
@@ -17,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.UUID;
 
 @Service
@@ -38,14 +40,14 @@ public class ImageService {
                 .log("findOneImage");
     }
 
-    public Mono<Void> createImage(Flux<FilePart> files) {
+    public Mono<Void> createImage(Flux<FilePart> files, Principal auth) {
         return files
                 .log("createImage-files")
                 .flatMap(file -> {
                     Mono<Image> saveDatabaseImage = imageRepository.save(
                             new Image(
                                     UUID.randomUUID().toString(),
-                                    file.filename()))
+                                    file.filename(), auth.getName()))
                             .log("createImage-save");
                     Mono<Void> copyFile = Mono.just(
                             Paths.get(UPLOAD_ROOT, file.filename())
@@ -70,6 +72,8 @@ public class ImageService {
                 .log("createImage-done");
     }
 
+    @PreAuthorize("hasRole('ADMIN') or " +
+    "@imageRepository.findByName(#filename).owner == authentication.name")
     public Mono<Void> deleteImage(String filename) {
         Mono<Void> deleteDatabaseImage = imageRepository
                 .findByName(filename)
